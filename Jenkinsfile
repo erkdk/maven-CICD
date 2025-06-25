@@ -1,19 +1,26 @@
 pipeline {
-    agent any 
+    agent any
     stages {
-        stage('Build') { 
+        stage('Build') {
             steps {
-                echo "Build script here....."
+                echo 'validate -->  compile -->  test -->  package'
+                sh 'mvn clean package'
+            }
+            post {
+                success {
+                    echo 'Now Archiving it...'
+                    archiveArtifacts artifacts: '**/*.war'
+                }
             }
         }
-        stage('Test') { 
+        stage('Test') {
             steps {
-                echo "Test script here......"
+                echo 'Test script here......'
             }
         }
-        stage('Deploy') { 
+        stage('Deploy') {
             steps {
-                echo "Deploy script here....."
+                echo 'Deploy script here.....'
             }
         }
     }
