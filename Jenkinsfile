@@ -13,9 +13,21 @@ pipeline {
                 }
             }
         }
-        stage('Test') {
+        stage('Docker image') {
             steps {
-                echo 'Test script here......'
+                echo 'Building the docker image......'
+                sh 'whoami'
+                sh 'docker image build -t mylocalrepo/simplejavaap: $BUILD_NUMBER'
+            }
+        }
+        stage('Scan image') {
+            steps {
+                echo 'Scanning docker image......'
+            }
+        }
+        stage('Push image') {
+            steps {
+                echo 'Scanning docker image script here......'
             }
         }
         stage('Deploy') {
