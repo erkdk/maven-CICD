@@ -17,7 +17,7 @@ pipeline {
             steps {
                 echo 'Building the docker image......'
                 sh 'whoami'
-                sh 'docker image build -t mylocalrepo/simplejavaap: $BUILD_NUMBER'
+                sh 'docker image build -t mylocalrepo/simplejavaap:$BUILD_NUMBER'
             }
         }
         stage('Scan image') {
