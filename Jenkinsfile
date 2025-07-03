@@ -1,9 +1,14 @@
 pipeline {
     agent any
+
+    environment {
+        imageREF = "aadarkdk/myapp"
+    }
+
     stages {
         stage('Build') {
             steps {
-                echo 'validate -->  compile -->  test -->  package'
+                echo 'validate --> compile --> test --> package the java project.'
                 sh 'mvn clean package'
             }
             post {
@@ -13,26 +18,35 @@ pipeline {
                 }
             }
         }
-        stage('Docker image') {
+
+        stage('Build Docker image') {
             steps {
-                echo 'Building the docker image......'
+                echo 'Building the docker image...'
                 sh 'whoami'
-                sh 'docker image build -t mylocalrepo/simplejavaap:$BUILD_NUMBER .'
+                sh 'docker image build -t ${imageREF}:${BUILD_NUMBER} .'
             }
         }
-        stage('Scan image') {
+
+        stage('Scan image using trivy') {
             steps {
-                echo 'Scanning docker image......'
+                echo 'Scanning the image...'
+                sh 'trivy image ${imageREF}:${BUILD_NUMBER}'
             }
         }
-        stage('Push image') {
+
+        stage('Push image to DockerHub') {
             steps {
-                echo 'Scanning docker image script here......'
+                echo 'Pushing the image to DockerHub...'
+                withDockerRegistry([credentialsId: 'dockerhub-credentials', url: '']) {
+                    sh 'docker push ${imageREF}:${BUILD_NUMBER}'
+                }
             }
         }
+
         stage('Deploy') {
             steps {
-                echo 'Deploy script here.....'
+                echo 'Deploy script here...'
+                // You can run a shell script or kubectl/docker-compose command here
             }
         }
     }
