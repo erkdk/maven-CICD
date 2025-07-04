@@ -43,10 +43,17 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
+        stage('Deploy the web app') {
             steps {
-                echo 'Deploy script here...'
-                // You can run a shell script or kubectl/docker-compose command here
+                echo 'Deploying the maven CICD on http://192.168.56.9:8082/'
+                sh """
+                docker container stop myapp || true
+                docker container rm myapp || true
+                docker image rm ${imageREF}:${BUILD_NUMBER} || true
+                docker run -d --name myapp -p 8082:8080 ${imageREF}:${BUILD_NUMBER}
+                """
+                sh 'docker ps | grep myapp'
+
             }
         }
     }
